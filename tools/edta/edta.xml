@@ -51,49 +51,20 @@
         #for $i, $s in enumerate($function_select.te_library)
             #if $s.genome and $s.curated_library:
                 echo $s.genome $s.curated_library >> genome.cds.list &&
-             
             #else if $s.genome: 
                 echo $s.genome >> genome.cds.list &&
             #end if 
-
         #end for
-        ls
-    #end if
-    ## #else if $function_select.function =='pan-edta':
-    ##     #set $cds_list = []
-    ##     #for $i, $s in enumerate($function_select.te_library)
-    ##         ln -s '${s.genome}' ./${i}_input.fa &&
-    ##         EDTA.pl 
-    ##         --genome ${i}_input.fa 
-    ##         --species '${s.species}'
-    ##         --anno 1
-    ##         #if $s.cds:
-    ##             --cds '${s.cds}'
-    ##         #end if 
-    ##         #if $s.curatedlib:
-    ##             --curatedlib '${s.curatedlib}'
-    ##         #end if
-    ##         $s.sensitive
-    ##         #if $s.mutation_rate:
-    ##             --u '${s.mutation_rate}'
-    ##         #end if
-    ##         $s.evaluate
-    ##         #if $s.exclude:
-    ##             --exclude '${s.exclude}'
-    ##         #end if
-    ##         #silent$cds_list.append(str($i) + '_input.fa')
-    ##         &&  mv ./${i}_input.fa.mod.EDTA.anno/*.mod.out .
-    ##         &&      
-    ##     #end for
-    ##     #for $i in $cds_list
-    ##         bash '$__tool_directory__/filter_out_single_copies.sh' $i  &&
-    ##     #end for
-    ##     #if $function_select.known_te:
-    ##         bash '$__tool_directory__/make_pan_library.sh' '${known_te}' 
-    ##     #else:
-    ##         bash '$__tool_directory__/make_pan_library.sh'
-    ##     #end if    
-    ## #end if    
+        bash panEDTA.sh 
+        -g genome.cds.list
+        -c '$function_select.global_cds_file'
+        #if $function_select.manaul_curated_library:
+            -l '$function_select.manaul_curated_library'
+        #end if
+        #if $function_select.minimum_te_copies:
+            -f '$function_select.minimum_te_copies'
+        #end if 
+    #end if 
     ]]></command>
     <inputs>
         <conditional name="function_select">
