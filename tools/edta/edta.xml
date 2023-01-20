@@ -3,19 +3,20 @@
         Whole-genome de-novo TE annotation 
     </description>
     <macros>
-        <token name="@WRAPPER_VERSION@">2.0.0</token>
+        <token name="@WRAPPER_VERSION@">2.1.0</token>
         <token name="@VERSION_SUFFIX@">galaxy0</token>
         <import>edta_macros.xml</import>
     </macros>
     <expand macro="bio_tools"></expand>
     <requirements>
-        <container type="docker">oushujun/edta:@WRAPPER_VERSION@</container>
+        <requirement type="package" version="@WRAPPER_VERSION@">edta</requirement>
+        <!--container type="docker">oushujun/edta:@WRAPPER_VERSION@</container-->
     </requirements>
     <command detect_errors="exit_code"><![CDATA[
     ## Genome to TE annotations 
     #if $function_select.function == 'genome':
-        ln -s '$function_select.genome' './input.fa' &&
-        perl '/EDTA/EDTA.pl' 
+        ln -s '$function_select.genome' ./input.fa &&
+        EDTA.pl
         --genome input.fa
         --species '$function_select.species'
         --step '$function_select.step'
@@ -25,17 +26,13 @@
         #if $function_select.curatedlib:
             --curatedlib '$function_select.curatedlib'
         #end if
-        #if $function_select.sensitive:
-            --sensitive 1
-        #end if
+        $function_select.sensitive
         #if $function_select.mutation_rate:
-            --u "$function_select.mutation_rate"
+            --u '$function_select.mutation_rate'
         #end if 
         #if $function_select.anno_select.anno == 'yes':
             --anno 1
-            #if $function_select.anno_select.evaluate:
-                --evaluate 1 
-            #end if
+            $function_select.anno_select.evaluate
             #if $function_select.anno_select.exclude:
                 --exclude '$function_select.anno_select.exclude'
             #end if
@@ -44,7 +41,7 @@
     ## Find elements of a paticular TE type
     #else if $function_select.function == 'te':
         ln -s '$function_select.genome' ./input.fa &&
-        perl /EDTA/EDTA_raw.pl
+        EDTA_raw.pl
         --genome input.fa
         --species '$function_select.species'
         --type '$function_select.te_type'
@@ -54,7 +51,7 @@
         #set $cds_list = []
         #for $i, $s in enumerate($function_select.te_library)
             ln -s '${s.genome}' ./${i}_input.fa &&
-            perl /EDTA/EDTA.pl 
+            EDTA.pl 
             --genome ${i}_input.fa 
             --species '${s.species}'
             --anno 1
@@ -64,15 +61,11 @@
             #if $s.curatedlib:
                 --curatedlib '${s.curatedlib}'
             #end if
-            #if $s.sensitive:
-                --sensitive 1
-            #end if
+            $s.sensitive
             #if $s.mutation_rate:
-                --u "${s.mutation_rate}"
+                --u '${s.mutation_rate}'
             #end if
-            #if $s.evaluate:
-                --evaluate 1 
-            #end if
+            $s.evaluate
             #if $s.exclude:
                 --exclude '${s.exclude}'
             #end if
