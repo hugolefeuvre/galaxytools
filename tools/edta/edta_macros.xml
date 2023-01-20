@@ -40,8 +40,8 @@
         <param name="manaul_curated_library" argument="-l" type="data" format="fasta" label="Manually Curated Library" optional='true' help="A manually curated, non-redundant library following the RepeatMasker naming format."/> 
         <param name="minimum_te_copies" argument="-f" type="float" format="fasta" label="Minimum TE Copies" optional='true' help="Minimum number of full-length TE copies in individual genomes to be kept as candidate TEs for the pangenome. Lower is more inclusive, and will ↑ library size, ↑ sensitivity, and ↑ inconsistency. Higher is more stringent, and will ↓ library size, ↓ sensitivity, and ↓ inconsistency."/> 
         <repeat name="te_library" title="TE_Library">
-            <param argument="-g" type="data" format="fasta" label="Genome File" help="The Genome FASTA file"/>
-            <param argument="--curatedlib" type="data" format="fasta" label="Curated Library File" optional='true' help="Provided a curated library to keep consistant naming and classification for known TEs. All TEs in this file will be trusted 100%, so please ONLY provide MANUALLY CURATED ones here."/>
+            <param name='genome' argument="-g" type="data" format="fasta" label="Genome File" help="The Genome FASTA file"/>
+            <param name='curated_library' argument="-cl" type="data" format="fasta" label="Curated Library File" optional='true' help="Provided a curated library to keep consistant naming and classification for known TEs. All TEs in this file will be trusted 100%, so please ONLY provide MANUALLY CURATED ones here."/>
         </repeat> 
     </xml>
     <xml name="te_only">

@@ -10,7 +10,6 @@
     <expand macro="bio_tools"></expand>
     <requirements>
         <requirement type="package" version="@WRAPPER_VERSION@">edta</requirement>
-        <!--container type="docker">oushujun/edta:@WRAPPER_VERSION@</container-->
     </requirements>
     <command detect_errors="exit_code"><![CDATA[
     ## Genome to TE annotations 
@@ -47,41 +46,54 @@
         --type '$function_select.te_type'
         && mv ./input.fa.mod.EDTA.raw/input.fa.mod* .
     ## pan-EDTA
-    #else if $function_select.function =='pan-edta':
-        #set $cds_list = []
+    #else if $function_select.function == 'pan-edta':
+        touch genome.cds.list &&
         #for $i, $s in enumerate($function_select.te_library)
-            ln -s '${s.genome}' ./${i}_input.fa &&
-            EDTA.pl 
-            --genome ${i}_input.fa 
-            --species '${s.species}'
-            --anno 1
-            #if $s.cds:
-                --cds '${s.cds}'
+            #if $s.genome and $s.curated_library:
+                echo $s.genome $s.curated_library >> genome.cds.list &&
+             
+            #else if $s.genome: 
+                echo $s.genome >> genome.cds.list &&
             #end if 
-            #if $s.curatedlib:
-                --curatedlib '${s.curatedlib}'
-            #end if
-            $s.sensitive
-            #if $s.mutation_rate:
-                --u '${s.mutation_rate}'
-            #end if
-            $s.evaluate
-            #if $s.exclude:
-                --exclude '${s.exclude}'
-            #end if
-            #silent$cds_list.append(str($i) + '_input.fa')
-            &&  mv ./${i}_input.fa.mod.EDTA.anno/*.mod.out .
-            &&      
+
         #end for
-        #for $i in $cds_list
-            bash '$__tool_directory__/filter_out_single_copies.sh' $i  &&
-        #end for
-        #if $function_select.known_te:
-            bash '$__tool_directory__/make_pan_library.sh' '${known_te}' 
-        #else:
-            bash '$__tool_directory__/make_pan_library.sh'
-        #end if    
-    #end if    
+        ls
+    #end if
+    ## #else if $function_select.function =='pan-edta':
+    ##     #set $cds_list = []
+    ##     #for $i, $s in enumerate($function_select.te_library)
+    ##         ln -s '${s.genome}' ./${i}_input.fa &&
+    ##         EDTA.pl 
+    ##         --genome ${i}_input.fa 
+    ##         --species '${s.species}'
+    ##         --anno 1
+    ##         #if $s.cds:
+    ##             --cds '${s.cds}'
+    ##         #end if 
+    ##         #if $s.curatedlib:
+    ##             --curatedlib '${s.curatedlib}'
+    ##         #end if
+    ##         $s.sensitive
+    ##         #if $s.mutation_rate:
+    ##             --u '${s.mutation_rate}'
+    ##         #end if
+    ##         $s.evaluate
+    ##         #if $s.exclude:
+    ##             --exclude '${s.exclude}'
+    ##         #end if
+    ##         #silent$cds_list.append(str($i) + '_input.fa')
+    ##         &&  mv ./${i}_input.fa.mod.EDTA.anno/*.mod.out .
+    ##         &&      
+    ##     #end for
+    ##     #for $i in $cds_list
+    ##         bash '$__tool_directory__/filter_out_single_copies.sh' $i  &&
+    ##     #end for
+    ##     #if $function_select.known_te:
+    ##         bash '$__tool_directory__/make_pan_library.sh' '${known_te}' 
+    ##     #else:
+    ##         bash '$__tool_directory__/make_pan_library.sh'
+    ##     #end if    
+    ## #end if    
     ]]></command>
     <inputs>
         <conditional name="function_select">
@@ -186,15 +198,15 @@
             <filter>function_select['function'] == "te" and function_select['te_type'] == 'all' </filter>
         </data>
         <!-- pan-edta -->
-        <data name="pan_outfile_library" from_work_dir="*.mod.EDTA.TElib.fa" format="fasta"  label="${tool.name} on ${on_string}: Non-Redundant TE Library">
+        <data name="pan_outfile_library" from_work_dir="*.list" format="fasta"  label="${tool.name} on ${on_string}: Non-Redundant TE Library">
             <filter>function_select['function'] == 'pan-edta'</filter>
         </data>
-        <data name='filter_copy' from_work_dir="*.mod.EDTA.TElib.novel.fa.real" format="fasta" label="${tool.name} on ${on_string}: filter out copy"> 
+        <!-- <data name='filter_copy' from_work_dir="*.mod.EDTA.TElib.novel.fa.real" format="fasta" label="${tool.name} on ${on_string}: filter out copy"> 
             <filter>function_select['function'] == 'pan-edta'</filter>
         </data>
         <data name='get_classification_info' from_work_dir="*.mod.EDTA.TElib.novel.fa.real.ori" format="fasta" label="${tool.name} on ${on_string}: aggregate novel TE libraries"> 
             <filter>function_select['function'] == 'pan-edta'</filter>
-        </data>
+        </data> -->
     </outputs>
     <tests>
         <!--  Genome to TE Annotations-->
