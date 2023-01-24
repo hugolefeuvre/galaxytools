@@ -298,7 +298,7 @@
             </conditional>
         </test>
         <!-- pan-EDTA -->
-        <test expect_num_outputs="3">
+        <test expect_num_outputs="1">
             <conditional name="function_select">
                 <param name="function" value="pan-edta"></param>
                 <repeat name="te_library">
